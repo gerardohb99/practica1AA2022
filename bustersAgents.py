@@ -27,25 +27,34 @@ from game import Actions
 from game import Directions
 import random, sys
 
+
 class NullGraphics(object):
     "Placeholder for graphics"
-    def initialize(self, state, isBlue = False):
+
+    def initialize(self, state, isBlue=False):
         pass
+
     def update(self, state):
         pass
+
     def pause(self):
         pass
+
     def draw(self, state):
         pass
+
     def updateDistributions(self, dist):
         pass
+
     def finish(self):
         pass
+
 
 class KeyboardInference(inference.InferenceModule):
     """
     Basic inference module for use with the keyboard.
     """
+
     def initializeUniformly(self, gameState):
         "Begin with a uniform distribution over ghost positions."
         self.beliefs = util.Counter()
@@ -74,7 +83,8 @@ class KeyboardInference(inference.InferenceModule):
 class BustersAgent(object):
     "An agent that tracks and displays its beliefs about ghost positions."
 
-    def __init__( self, index = 0, inference = "ExactInference", ghostAgents = None, observeEnable = True, elapseTimeEnable = True):
+    def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True,
+                 elapseTimeEnable=True):
         inferenceType = util.lookup(inference, globals())
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
@@ -97,24 +107,25 @@ class BustersAgent(object):
 
     def getAction(self, gameState):
         "Updates beliefs, then chooses an action based on updated beliefs."
-        #for index, inf in enumerate(self.inferenceModules):
+        # for index, inf in enumerate(self.inferenceModules):
         #    if not self.firstMove and self.elapseTimeEnable:
         #        inf.elapseTime(gameState)
         #    self.firstMove = False
         #    if self.observeEnable:
         #        inf.observeState(gameState)
         #    self.ghostBeliefs[index] = inf.getBeliefDistribution()
-        #self.display.updateDistributions(self.ghostBeliefs)
+        # self.display.updateDistributions(self.ghostBeliefs)
         return self.chooseAction(gameState)
 
     def chooseAction(self, gameState):
         "By default, a BustersAgent just stops.  This should be overridden."
         return Directions.STOP
 
+
 class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
     "An agent controlled by the keyboard that displays beliefs about ghost positions."
 
-    def __init__(self, index = 0, inference = "KeyboardInference", ghostAgents = None):
+    def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
         KeyboardAgent.__init__(self, index)
         BustersAgent.__init__(self, index, inference, ghostAgents)
 
@@ -145,7 +156,7 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
         data += "@attribute lastAction{Stop,South,North,West,East}\n"
         data += "@attribute aliveGhost{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
         data += "@attribute score NUMERIC\n\n"
-        data +="@data\n"
+        data += "@data\n"
         return data
 
     def printLineDataV2(self, gameState, data=""):
@@ -162,24 +173,24 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
         # Ghosts distances (recordar que cuando el fantasma esta muerto la distancia es 1)
         for i in gameState.data.ghostDistances:
             if i == None:
-                data += str(10**3)+","
+                data += str(10 ** 3) + ","
             else:
                 data += str(i) + ","
 
         # Legal actions for Pacman in current position
         if "North" in gameState.getLegalPacmanActions():
-            direction += 1000   #1000
+            direction += 1000  # 1000
 
         if "South" in gameState.getLegalPacmanActions():
-            direction += 100    #100
+            direction += 100  # 100
 
         if "East" in gameState.getLegalPacmanActions():
-            direction += 10    #10
+            direction += 10  # 10
 
         if "West" in gameState.getLegalPacmanActions():
-            direction += 1   #1
+            direction += 1  # 1
 
-        data += str(direction)+","
+        data += str(direction) + ","
 
         # Pacman direction (last action)
         data += str(gameState.data.agentStates[0].getDirection()) + ","
@@ -201,27 +212,31 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
         data += str(alive_ghost) + ","
 
         # Score
-        data += str(gameState.getScore())
+        data += str(gameState.getScore()) + ","
         return data
 
 
 '''Random PacMan Agent'''
+
+
 class RandomPAgent(BustersAgent):
 
     def registerInitialState(self, gameState):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
-        
+
     ''' Example of counting something'''
+
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if(height == True):
+                if (height == True):
                     food = food + 1
         return food
-    
-    ''' Print the layout'''  
+
+    ''' Print the layout'''
+
     def printGrid(self, gameState):
         table = ""
         ##print(gameState.data.layout) ## Print by terminal
@@ -231,17 +246,18 @@ class RandomPAgent(BustersAgent):
                 table = table + gameState.data._foodWallStr(food[x][y], walls[x][y]) + ","
         table = table[:-1]
         return table
-        
+
     def chooseAction(self, gameState):
         move = Directions.STOP
-        legal = gameState.getLegalActions(0) ##Legal position from the pacman
+        legal = gameState.getLegalActions(0)  ##Legal position from the pacman
         move_random = random.randint(0, 3)
-        if   ( move_random == 0 ) and Directions.WEST in legal:  move = Directions.WEST
-        if   ( move_random == 1 ) and Directions.EAST in legal: move = Directions.EAST
-        if   ( move_random == 2 ) and Directions.NORTH in legal:   move = Directions.NORTH
-        if   ( move_random == 3 ) and Directions.SOUTH in legal: move = Directions.SOUTH
+        if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
+        if (move_random == 1) and Directions.EAST in legal: move = Directions.EAST
+        if (move_random == 2) and Directions.NORTH in legal:   move = Directions.NORTH
+        if (move_random == 3) and Directions.SOUTH in legal: move = Directions.SOUTH
         return move
-        
+
+
 class GreedyBustersAgent(BustersAgent):
     "An agent that charges the closest ghost."
 
@@ -283,8 +299,9 @@ class GreedyBustersAgent(BustersAgent):
         livingGhosts = gameState.getLivingGhosts()
         livingGhostPositionDistributions = \
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
-             if livingGhosts[i+1]]
+             if livingGhosts[i + 1]]
         return Directions.EAST
+
 
 class BasicAgentAA(BustersAgent):
 
@@ -292,20 +309,22 @@ class BasicAgentAA(BustersAgent):
         BustersAgent.registerInitialState(self, gameState)
         self.distancer = Distancer(gameState.data.layout, False)
         self.countActions = 0
-        
+
     ''' Example of counting something'''
+
     def countFood(self, gameState):
         food = 0
         for width in gameState.data.food:
             for height in width:
-                if(height == True):
+                if (height == True):
                     food = food + 1
         return food
-    
-    ''' Print the layout'''  
+
+    ''' Print the layout'''
+
     def printGrid(self, gameState):
         table = ""
-        #print(gameState.data.layout) ## Print by terminal
+        # print(gameState.data.layout) ## Print by terminal
         for x in range(gameState.data.layout.width):
             for y in range(gameState.data.layout.height):
                 food, walls = gameState.data.food, gameState.data.layout.walls
@@ -331,7 +350,8 @@ class BasicAgentAA(BustersAgent):
         # Ghosts positions
         print("Ghosts positions: ", gameState.getGhostPositions())
         # Ghosts directions
-        print("Ghosts directions: ", [gameState.getGhostDirections().get(i) for i in range(0, gameState.getNumAgents() - 1)])
+        print("Ghosts directions: ",
+              [gameState.getGhostDirections().get(i) for i in range(0, gameState.getNumAgents() - 1)])
         # Manhattan distance to ghosts
         print("Ghosts distances: ", gameState.data.ghostDistances)
         # Pending pac dots
@@ -340,17 +360,17 @@ class BasicAgentAA(BustersAgent):
         print("Distance nearest pac dots: ", gameState.getDistanceNearestFood())
         # Map walls
         print("Map:")
-        print( gameState.getWalls())
+        print(gameState.getWalls())
         # Score
         print("Score: ", gameState.getScore())
 
     def vectorToAction(self, vector, legal, lastAction):
         dx, dy = vector
-        min_d = min(dx,dy)
+        min_d = min(dx, dy)
 
         # Dar prioridad al diferencial más pequeño
         if min_d == dy:
-            if dy > 0 and Directions.NORTH in legal and Directions.SOUTH is not lastAction: 
+            if dy > 0 and Directions.NORTH in legal and Directions.SOUTH is not lastAction:
                 return Directions.NORTH
             if dy < 0 and Directions.SOUTH in legal and Directions.NORTH is not lastAction:
                 return Directions.SOUTH
@@ -363,59 +383,63 @@ class BasicAgentAA(BustersAgent):
                 return Directions.WEST
             if dx > 0 and Directions.EAST in legal and Directions.WEST is not lastAction:
                 return Directions.EAST
-            if dy > 0 and Directions.NORTH in legal and Directions.SOUTH is not lastAction: 
+            if dy > 0 and Directions.NORTH in legal and Directions.SOUTH is not lastAction:
                 return Directions.NORTH
             if dy < 0 and Directions.SOUTH in legal and Directions.NORTH is not lastAction:
                 return Directions.SOUTH
 
-        
-        #Cuando se queda sin acciones legales hacemos uso de un random action
+        # Cuando se queda sin acciones legales hacemos uso de un random action
         direction = Directions.STOP
         legal.remove(Directions.STOP)
         while direction is Directions.STOP:
             move_random = random.randint(0, 3)
-            if   ( move_random == 0 ) and Directions.WEST in legal and (Directions.EAST is not lastAction or len(legal) == 1): 
-                direction =  Directions.WEST
-            elif   ( move_random == 1 ) and Directions.EAST in legal and (Directions.WEST is not lastAction or len(legal) == 1): 
-                direction =  Directions.EAST
-            elif   ( move_random == 2 ) and Directions.NORTH in legal and (Directions.SOUTH is not lastAction or len(legal) == 1):  
-                direction =  Directions.NORTH
-            elif   ( move_random == 3 ) and Directions.SOUTH in legal and (Directions.NORTH is not lastAction or len(legal) == 1): 
-                direction =  Directions.SOUTH
+            if (move_random == 0) and Directions.WEST in legal and (
+                    Directions.EAST is not lastAction or len(legal) == 1):
+                direction = Directions.WEST
+            elif (move_random == 1) and Directions.EAST in legal and (
+                    Directions.WEST is not lastAction or len(legal) == 1):
+                direction = Directions.EAST
+            elif (move_random == 2) and Directions.NORTH in legal and (
+                    Directions.SOUTH is not lastAction or len(legal) == 1):
+                direction = Directions.NORTH
+            elif (move_random == 3) and Directions.SOUTH in legal and (
+                    Directions.NORTH is not lastAction or len(legal) == 1):
+                direction = Directions.SOUTH
         return direction
 
     def chooseAction(self, gameState):
         self.countActions = self.countActions + 1
         self.printInfo(gameState)
         move = Directions.STOP
-        legal = gameState.getLegalActions(0) ##Legal position from the pacman
-        minDistance = 10**10
+        legal = gameState.getLegalActions(0)  ##Legal position from the pacman
+        minDistance = 10 ** 10
         livingGhosts = gameState.getLivingGhosts()
         lastAction = gameState.data.agentStates[0].getDirection()
-        vec = (1,1)
+        vec = (1, 1)
 
-        for i in range(1,len(livingGhosts)):
+        for i in range(1, len(livingGhosts)):
             if livingGhosts[i]:
 
-                distance = (gameState.data.ghostDistances[i-1], 10**10)[gameState.data.ghostDistances[i-1] is None]
+                distance = (gameState.data.ghostDistances[i - 1], 10 ** 10)[
+                    gameState.data.ghostDistances[i - 1] is None]
                 if distance < minDistance:
                     minDistance = distance
-                    vecx = gameState.getGhostPositions()[i-1][0] - gameState.getPacmanPosition()[0]
-                    vecy = gameState.getGhostPositions()[i-1][1] - gameState.getPacmanPosition()[1] 
-                    vec = (vecx,vecy)
-                    
+                    vecx = gameState.getGhostPositions()[i - 1][0] - gameState.getPacmanPosition()[0]
+                    vecy = gameState.getGhostPositions()[i - 1][1] - gameState.getPacmanPosition()[1]
+                    vec = (vecx, vecy)
+
         move = self.vectorToAction(vec, legal, lastAction)
         return move
 
-    def printLineData(self, gameState):     
+    def printLineData(self, gameState):
         data = ""
         # Pacman position
-        data= str(gameState.getPacmanPosition()[0]) +  ", " + str(gameState.getPacmanPosition()[1]) + ", "
+        data = str(gameState.getPacmanPosition()[0]) + ", " + str(gameState.getPacmanPosition()[1]) + ", "
 
         # Ghosts positions
         for i in gameState.getGhostPositions():
-            data+= str(i[0]) + ", "
-            data+= str(i[1]) + ", "
+            data += str(i[0]) + ", "
+            data += str(i[1]) + ", "
 
         # Ghosts distances (recordar que cuando el fantasma esta muerto la distancia es 1)
         for i in gameState.data.ghostDistances:
@@ -423,35 +447,35 @@ class BasicAgentAA(BustersAgent):
 
         # Legal actions for Pacman in current position
         if "North" in gameState.getLegalPacmanActions():
-            data+= "True, "
+            data += "True, "
         else:
-            data+= "False, "
-    
+            data += "False, "
+
         if "South" in gameState.getLegalPacmanActions():
-            data+= "True, "
+            data += "True, "
         else:
-            data+= "False, "
+            data += "False, "
 
         if "East" in gameState.getLegalPacmanActions():
-            data+= "True, "
+            data += "True, "
         else:
-            data+= "False, "
+            data += "False, "
 
         if "West" in gameState.getLegalPacmanActions():
-            data+= "True, "
+            data += "True, "
         else:
-            data+= "False, "
+            data += "False, "
 
         # Pacman direction (last action)
         data += str(gameState.data.agentStates[0].getDirection()) + ", "
-        
-        # Alive ghosts (index 0 corresponds to Pacman and is always false)
-        for i in range(1,len(gameState.getLivingGhosts())): 
-            data+=str(gameState.getLivingGhosts()[i]) + ", " 
 
-        # Score
-        data+=str(gameState.getScore())+"\n"
+        # Alive ghosts (index 0 corresponds to Pacman and is always false)
+        for i in range(1, len(gameState.getLivingGhosts())):
+            data += str(gameState.getLivingGhosts()[i]) + ", "
+
+            # Score
+        data += str(gameState.getScore()) + "\n"
         return data
 
-    #Para ver los puntos conflictivos seria bueno crearse un array en el que vamos evaluando puntos conflictivos para leugo consultar dicha lista antes 
+    # Para ver los puntos conflictivos seria bueno crearse un array en el que vamos evaluando puntos conflictivos para leugo consultar dicha lista antes
     # realizar cualquier tipo de movimiento 
