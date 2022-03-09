@@ -620,6 +620,7 @@ class Game(object):
         numAgents = len( self.agents )
         step = 0
 
+        prevState = ''
         f = open("output.arff", "a")
 
         if os.path.getsize("output.arff") == 0:
@@ -701,11 +702,14 @@ class Game(object):
                     return
             else:
                 action = agent.getAction(observation)
-                if(agent ==  self.agents[0] and type(agent).__name__) == "BasicAgentAA":                    
-                    f.write(agent.printLineData(self.state))
-                elif (agent ==  self.agents[0] and type(agent).__name__) == "BustersKeyboardAgent":
-                    data_new=""
-                    f.write(agent.printLineDataV2(self.state, data_new))
+
+                if agent ==  self.agents[0]: 
+                    if prevState == '':
+                        prevState = agent.printLineDataV2(self.state)
+                    else:
+                        prevState += observation.data.agentStates[0].getDirection() + ',' + observation.getScore() + '\n'
+                        f.write(prevState)
+                        prevState = agent.printLineDataV2(self.state)
 
             self.unmute()
 

@@ -201,7 +201,7 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
         data += str(alive_ghost) + ","
 
         # Score
-        data += str(gameState.getScore()) + "\n"
+        data += str(gameState.getScore())
         return data
 
 
