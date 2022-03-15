@@ -120,21 +120,7 @@ class BustersAgent(object):
     def chooseAction(self, gameState):
         "By default, a BustersAgent just stops.  This should be overridden."
         return Directions.STOP
-
-
-class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
-    "An agent controlled by the keyboard that displays beliefs about ghost positions."
-
-    def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
-        KeyboardAgent.__init__(self, index)
-        BustersAgent.__init__(self, index, inference, ghostAgents)
-
-    def getAction(self, gameState):
-        return BustersAgent.getAction(self, gameState)
-
-    def chooseAction(self, gameState):
-        return KeyboardAgent.getAction(self, gameState)
-
+    
     def printHeader(self):
         data = ""
         data += "@relation keyboard-training-data\n\n"
@@ -155,7 +141,9 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
         data += "@attribute validActions{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
         data += "@attribute lastAction{Stop,South,North,West,East}\n"
         data += "@attribute aliveGhost{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
-        data += "@attribute score NUMERIC\n\n"
+        data += "@attribute score NUMERIC\n"
+        data += "@attribute action{Stop,South,North,West,East}\n"
+        data += "@attribute nextScore NUMERIC\n\n"
         data += "@data\n"
         return data
 
@@ -215,6 +203,20 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
         data += str(gameState.getScore()) + ","
         return data
 
+
+
+class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
+    "An agent controlled by the keyboard that displays beliefs about ghost positions."
+
+    def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
+        KeyboardAgent.__init__(self, index)
+        BustersAgent.__init__(self, index, inference, ghostAgents)
+
+    def getAction(self, gameState):
+        return BustersAgent.getAction(self, gameState)
+
+    def chooseAction(self, gameState):
+        return KeyboardAgent.getAction(self, gameState)
 
 '''Random PacMan Agent'''
 
@@ -366,7 +368,7 @@ class BasicAgentAA(BustersAgent):
 
     def vectorToAction(self, vector, legal, lastAction):
         dx, dy = vector
-        min_d = min(dx, dy)
+        min_d = max(dx, dy)
 
         # Dar prioridad al diferencial más pequeño
         if min_d == dy:
