@@ -26,8 +26,8 @@ python busters.py -l dotHunt5.lay -p BasicAgentAA -t 0 -g RandomGhost
 
 python busters.py -l maziMaze.lay -p BasicAgentAA  -t 0
 python busters.py -l maziMaze2.lay -p BasicAgentAA -t 0
-python busters.py -l maziMaze3.lay -p BasicAgentAA -t 0 -g RandomGhost
 python busters.py -l maziMaze4.lay -p BasicAgentAA -t 0 -g RandomGhost
 python busters.py -l maziMaze5.lay -p BasicAgentAA -t 0 -g RandomGhost
+python busters.py -l maziMaze6.lay -p BasicAgentAA -t 0 -g RandomGhost
 
 rm output.arff t1_allData.arff
