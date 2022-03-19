@@ -124,25 +124,26 @@ class BustersAgent(object):
     def printMiniMap(self, entireMap, pacmanPos, ghostPos, size=2):
         miniMap = ""
         x,y = pacmanPos
-        for i in range(y-size,y+size):
-            for j in range(x-size,x+size):
-                if i < 0 or i > (entireMap.height-1) or j < 0 or j > (entireMap.width-1) or entireMap[i][j] == "T":
-                    miniMap+="W"
-                elif entireMap[i][j] == "F":
+
+        for i in range(y-size,y+size+1):
+            for j in range(x-size,x+size+1):
+                if i < 0 or i > (entireMap.height-1) or j < 0 or j > (entireMap.width-1) or entireMap[j][i] == True:
+                    miniMap+="W,"
+                elif entireMap[j][i] == False:
                     isGhost = False
                     for (ghostX,ghostY) in ghostPos:
                         if(ghostX == j and ghostY == i):
                             isGhost = True
-                    
                     if isGhost:
-                        miniMap+="G"
+                        miniMap+="G,"
                     else:
-                        miniMap+="E"
+                        miniMap+="E,"
+        miniMap = miniMap[0:len(miniMap)-1]
         return miniMap
     
     def printHeader(self):
         data = ""
-        data += "@relation keyboard-training-data\n\n"
+        data += "@relation " + self.__class__.__name__ + "training-data\n\n"
         data += "@attribute xPacmanPosition NUMERIC\n"
         data += "@attribute yPacmanPosition NUMERIC\n"
         data += "@attribute ghostPosition1x NUMERIC\n"
@@ -161,6 +162,11 @@ class BustersAgent(object):
         data += "@attribute lastAction{Stop,South,North,West,East}\n"
         data += "@attribute aliveGhost{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
         data += "@attribute score NUMERIC\n"
+        # Minimap para size=2
+        for i in range(1,26):
+            data += "@attribute minimap"+ str(i) +" {W,E,G}\n"
+
+        data += "@attribute nearestDot NUMERIC\n"
         data += "@attribute action{Stop,South,North,West,East}\n"
         data += "@attribute nextScore NUMERIC\n\n"
         data += "@data\n"
@@ -220,6 +226,13 @@ class BustersAgent(object):
 
         # Score
         data += str(gameState.getScore()) + ","
+
+        # MiniMap
+        data += self.printMiniMap(gameState.getWalls(), gameState.getPacmanPosition(), gameState.getGhostPositions()) + ","
+
+        # Distance to Nearest Food
+        data += str(gameState.getDistanceNearestFood()) + ","
+
         return data
 
 
@@ -235,7 +248,7 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
         return BustersAgent.getAction(self, gameState)
 
     def chooseAction(self, gameState):
-        print(self.printMiniMap(gameState.getWalls(), gameState.getPacmanPosition(), gameState.getGhostPositions()))
+        # print(self.printMiniMap(gameState.getWalls(), gameState.getPacmanPosition(), gameState.getGhostPositions()))
         return KeyboardAgent.getAction(self, gameState)
 
 '''Random PacMan Agent'''
