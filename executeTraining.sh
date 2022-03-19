@@ -30,4 +30,4 @@ python busters.py -l maziMaze4.lay -p BasicAgentAA -t 0 -g RandomGhost
 python busters.py -l maziMaze5.lay -p BasicAgentAA -t 0 -g RandomGhost
 python busters.py -l maziMaze6.lay -p BasicAgentAA -t 0 -g RandomGhost
 
-rm output.arff t1_allData.arff
+mv output.arff t1_allData.arff
