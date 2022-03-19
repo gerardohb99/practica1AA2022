@@ -121,6 +121,25 @@ class BustersAgent(object):
         "By default, a BustersAgent just stops.  This should be overridden."
         return Directions.STOP
     
+    def printMiniMap(self, entireMap, pacmanPos, ghostPos, size=2):
+        miniMap = ""
+        x,y = pacmanPos
+        for i in range(y-size,y+size):
+            for j in range(x-size,x+size):
+                if i < 0 or i > (entireMap.height-1) or j < 0 or j > (entireMap.width-1) or entireMap[i][j] == "T":
+                    miniMap+="W"
+                elif entireMap[i][j] == "F":
+                    isGhost = False
+                    for (ghostX,ghostY) in ghostPos:
+                        if(ghostX == j and ghostY == i):
+                            isGhost = True
+                    
+                    if isGhost:
+                        miniMap+="G"
+                    else:
+                        miniMap+="E"
+        return miniMap
+    
     def printHeader(self):
         data = ""
         data += "@relation keyboard-training-data\n\n"
@@ -216,6 +235,7 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
         return BustersAgent.getAction(self, gameState)
 
     def chooseAction(self, gameState):
+        print(self.printMiniMap(gameState.getWalls(), gameState.getPacmanPosition(), gameState.getGhostPositions()))
         return KeyboardAgent.getAction(self, gameState)
 
 '''Random PacMan Agent'''
@@ -368,10 +388,10 @@ class BasicAgentAA(BustersAgent):
 
     def vectorToAction(self, vector, legal, lastAction):
         dx, dy = vector
-        min_d = max(dx, dy)
+        max_d = max(dx, dy)
 
-        # Dar prioridad al diferencial más pequeño
-        if min_d == dy:
+        # Dar prioridad al diferencial mas grande
+        if max_d == dy:
             if dy > 0 and Directions.NORTH in legal and Directions.SOUTH is not lastAction:
                 return Directions.NORTH
             if dy < 0 and Directions.SOUTH in legal and Directions.NORTH is not lastAction:
@@ -408,6 +428,11 @@ class BasicAgentAA(BustersAgent):
                     Directions.NORTH is not lastAction or len(legal) == 1):
                 direction = Directions.SOUTH
         return direction
+
+
+
+
+
 
     def chooseAction(self, gameState):
         self.countActions = self.countActions + 1
