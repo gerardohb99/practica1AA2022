@@ -26,6 +26,7 @@ from distanceCalculator import Distancer
 from game import Actions
 from game import Directions
 import random, sys
+from wekaI import Weka
 
 
 class NullGraphics(object):
@@ -89,6 +90,8 @@ class BustersAgent(object):
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
         self.elapseTimeEnable = elapseTimeEnable
+        self.weka = Weka()
+        self.weka.start_jvm()
 
     def registerInitialState(self, gameState):
         "Initializes beliefs and inference modules"
@@ -224,14 +227,14 @@ class BustersAgent(object):
 
         data += str(alive_ghost) + ","
 
-        # Score
-        data += str(gameState.getScore()) + ","
+        # # Score
+        # data += str(gameState.getScore()) + ","
 
         # MiniMap
         data += self.printMiniMap(gameState.getWalls(), gameState.getPacmanPosition(), gameState.getGhostPositions()) + ","
 
-        # Distance to Nearest Food
-        data += str(gameState.getDistanceNearestFood()) + ","
+        # # Distance to Nearest Food
+        # data += str(gameState.getDistanceNearestFood()) + ","
 
         return data
 
@@ -452,23 +455,26 @@ class BasicAgentAA(BustersAgent):
         self.printInfo(gameState)
         move = Directions.STOP
         legal = gameState.getLegalActions(0)  ##Legal position from the pacman
-        minDistance = 10 ** 10
-        livingGhosts = gameState.getLivingGhosts()
-        lastAction = gameState.data.agentStates[0].getDirection()
-        vec = (1, 1)
+        # minDistance = 10 ** 10
+        # livingGhosts = gameState.getLivingGhosts()
+        # lastAction = gameState.data.agentStates[0].getDirection()
+        # vec = (1, 1)
 
-        for i in range(1, len(livingGhosts)):
-            if livingGhosts[i]:
+        # for i in range(1, len(livingGhosts)):
+        #     if livingGhosts[i]:
 
-                distance = (gameState.data.ghostDistances[i - 1], 10 ** 10)[
-                    gameState.data.ghostDistances[i - 1] is None]
-                if distance < minDistance:
-                    minDistance = distance
-                    vecx = gameState.getGhostPositions()[i - 1][0] - gameState.getPacmanPosition()[0]
-                    vecy = gameState.getGhostPositions()[i - 1][1] - gameState.getPacmanPosition()[1]
-                    vec = (vecx, vecy)
+        #         distance = (gameState.data.ghostDistances[i - 1], 10 ** 10)[
+        #             gameState.data.ghostDistances[i - 1] is None]
+        #         if distance < minDistance:
+        #             minDistance = distance
+        #             vecx = gameState.getGhostPositions()[i - 1][0] - gameState.getPacmanPosition()[0]
+        #             vecy = gameState.getGhostPositions()[i - 1][1] - gameState.getPacmanPosition()[1]
+        #             vec = (vecx, vecy)
 
-        move = self.vectorToAction(vec, legal, lastAction)
+        # move = self.vectorToAction(vec, legal, lastAction)
+        x = self.printLineDataV2(gameState).split(",")
+
+        move = self.weka.predict("./Weka_data/modelLMT_keyboard_1.model", x, "./Weka_data/training_keyboard_1.arff")
         return move
 
     def printLineData(self, gameState):
