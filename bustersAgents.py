@@ -471,6 +471,7 @@ class BasicAgentAA(BustersAgent):
         #             vecy = gameState.getGhostPositions()[i - 1][1] - gameState.getPacmanPosition()[1]
         #             vec = (vecx, vecy)
 
+
         # move = self.vectorToAction(vec, legal, lastAction)
         rawX = self.printLineDataV2(gameState).split(",")
         rawX.pop()
