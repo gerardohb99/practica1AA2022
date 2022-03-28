@@ -471,10 +471,27 @@ class BasicAgentAA(BustersAgent):
         #             vecy = gameState.getGhostPositions()[i - 1][1] - gameState.getPacmanPosition()[1]
         #             vec = (vecx, vecy)
 
+
         # move = self.vectorToAction(vec, legal, lastAction)
-        x = self.printLineDataV2(gameState).split(",")
+        rawX = self.printLineDataV2(gameState).split(",")
+        rawX.pop()
+        x = []
+        for i,val in enumerate(rawX):
+            try:
+                if i == 14 or i == 16:
+                    raise Exception
+                val = int(val)
+                x.append(val)
+            except:
+                x.append(val)
 
         move = self.weka.predict("./Weka_data/modelLMT_keyboard_1.model", x, "./Weka_data/training_keyboard_1.arff")
+        while move not in legal:
+            move_random = random.randint(0, 3)
+            if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
+            if (move_random == 1) and Directions.EAST in legal: move = Directions.EAST
+            if (move_random == 2) and Directions.NORTH in legal:   move = Directions.NORTH
+            if (move_random == 3) and Directions.SOUTH in legal: move = Directions.SOUTH
         return move
 
     def printLineData(self, gameState):
