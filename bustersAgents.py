@@ -147,69 +147,79 @@ class BustersAgent(object):
     def printHeader(self):
         data = ""
         data += "@relation " + self.__class__.__name__ + "training-data\n\n"
-        data += "@attribute xPacmanPosition NUMERIC\n"
-        data += "@attribute yPacmanPosition NUMERIC\n"
-        data += "@attribute ghostPosition1x NUMERIC\n"
-        data += "@attribute ghostPosition1y NUMERIC\n"
-        data += "@attribute ghostPosition2x NUMERIC\n"
-        data += "@attribute ghostPosition2y NUMERIC\n"
-        data += "@attribute ghostPosition3x NUMERIC\n"
-        data += "@attribute ghostPosition3y NUMERIC\n"
-        data += "@attribute ghostPosition4x NUMERIC\n"
-        data += "@attribute ghostPosition4y NUMERIC\n"
-        data += "@attribute distanceGhost1 NUMERIC\n"
-        data += "@attribute distanceGhost2 NUMERIC\n"
-        data += "@attribute distanceGhost3 NUMERIC\n"
-        data += "@attribute distanceGhost4 NUMERIC\n"
-        data += "@attribute validActions{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
-        data += "@attribute lastAction{Stop,South,North,West,East}\n"
+        data += "@attribute ghostVector1x NUMERIC\n"
+        data += "@attribute ghostVector1y NUMERIC\n"
+        data += "@attribute ghostVector2x NUMERIC\n"
+        data += "@attribute ghostVector2y NUMERIC\n"
+        data += "@attribute ghostVector3x NUMERIC\n"
+        data += "@attribute ghostVector3y NUMERIC\n"
+        data += "@attribute ghostVector4x NUMERIC\n"
+        data += "@attribute ghostVector4y NUMERIC\n"
         data += "@attribute aliveGhost{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
         data += "@attribute score NUMERIC\n"
         # Minimap para size=2
         for i in range(1,26):
             data += "@attribute minimap"+ str(i) +" {W,E,G}\n"
 
-        data += "@attribute nearestDot NUMERIC\n"
+        data += "@attribute isGhostNorth {True, False}\n"
+        data += "@attribute isGhostSouth {True, False}\n"
+        data += "@attribute isGhostEast  {True, False}\n"
+        data += "@attribute isGhostWest  {True, False}\n"
+        data += "@attribute isFoodNorth  {True, False}\n"
+        data += "@attribute isFoodSouth  {True, False}\n"
+        data += "@attribute isFoodEast   {True, False}\n"
+        data += "@attribute isFoodWest   {True, False}\n"
+
         data += "@attribute action{Stop,South,North,West,East}\n"
         data += "@attribute nextScore NUMERIC\n\n"
         data += "@data\n"
         return data
 
+    def is_food (self, gameState, direction):
+        _directions = {Directions.NORTH: (0, 1),
+                   Directions.SOUTH: (0, -1),
+                   Directions.EAST:  (1, 0),
+                   Directions.WEST:  (-1, 0),
+                   Directions.STOP:  (0, 0)}
+        x, y = gameState.getPacmanPosition()
+
+        xd, yd = _directions[direction]
+        x += xd
+        y += yd
+
+        return gameState.data.food[x][y]
+
+    def is_ghost (self, gameState, direction):
+        _directions = {Directions.NORTH: (0, 1),
+                   Directions.SOUTH: (0, -1),
+                   Directions.EAST:  (1, 0),
+                   Directions.WEST:  (-1, 0),
+                   Directions.STOP:  (0, 0)}
+        x, y = gameState.getPacmanPosition()
+
+        xd, yd = _directions[direction]
+        x += xd
+        y += yd
+        
+        for i, ghost_position in enumerate(gameState.getGhostPositions()):          
+            if ghost_position == (x,y) and gameState.getLivingGhosts()[i+1] == True:
+                return True          
+
+        return False
+
     def printLineDataV2(self, gameState, data=""):
         direction = 0
         alive_ghost = 0
-        # Pacman position
-        data = str(gameState.getPacmanPosition()[0]) + "," + str(gameState.getPacmanPosition()[1]) + ","
+        pacmanPos = gameState.getPacmanPosition()
 
-        # Ghosts positions
-        for i in gameState.getGhostPositions():
-            data += str(i[0]) + ","
-            data += str(i[1]) + ","
-
-        # Ghosts distances (recordar que cuando el fantasma esta muerto la distancia es 1)
-        for i in gameState.data.ghostDistances:
-            if i == None:
-                data += str(10 ** 3) + ","
+        # Ghosts vector center in pacman 
+        for i, ghostPos in enumerate(gameState.getGhostPositions()):
+            if gameState.getLivingGhosts()[i+1] is True:
+                data += str(ghostPos[0] - pacmanPos[0]) + ","
+                data += str(ghostPos[1] - pacmanPos[1]) + ","
             else:
-                data += str(i) + ","
+                data += "99999,99999,"
 
-        # Legal actions for Pacman in current position
-        if "North" in gameState.getLegalPacmanActions():
-            direction += 1000  # 1000
-
-        if "South" in gameState.getLegalPacmanActions():
-            direction += 100  # 100
-
-        if "East" in gameState.getLegalPacmanActions():
-            direction += 10  # 10
-
-        if "West" in gameState.getLegalPacmanActions():
-            direction += 1  # 1
-
-        data += str(direction) + ","
-
-        # Pacman direction (last action)
-        data += str(gameState.data.agentStates[0].getDirection()) + ","
 
         # Alive ghosts (index 0 corresponds to Pacman and is always false)
         for i in range(1, len(gameState.getLivingGhosts())):
@@ -227,14 +237,32 @@ class BustersAgent(object):
 
         data += str(alive_ghost) + ","
 
-        # # Score
-        # data += str(gameState.getScore()) + ","
+        # Score
+        data += str(gameState.getScore()) + ","
 
         # MiniMap
         data += self.printMiniMap(gameState.getWalls(), gameState.getPacmanPosition(), gameState.getGhostPositions()) + ","
 
-        # # Distance to Nearest Food
-        # data += str(gameState.getDistanceNearestFood()) + ","
+        #Is ghost in directions
+        # North
+        data += str(self.is_ghost(gameState, Directions.NORTH)) + ","
+        # South
+        data += str(self.is_ghost(gameState, Directions.SOUTH)) + ","
+        # East
+        data += str(self.is_ghost(gameState, Directions.EAST)) + ","
+        # West
+        data += str(self.is_ghost(gameState, Directions.WEST)) + ","
+
+        #Is food in directions
+        # North
+        data += str(self.is_food(gameState, Directions.NORTH)) + ","
+        # South
+        data += str(self.is_food(gameState, Directions.SOUTH)) + ","
+        # East
+        data += str(self.is_food(gameState, Directions.EAST)) + ","
+        # West
+        data += str(self.is_food(gameState, Directions.WEST)) + ","
+
 
         return data
 
