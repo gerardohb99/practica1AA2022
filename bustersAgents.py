@@ -587,14 +587,14 @@ class AgentAA(BustersAgent):
         x = []
         for i,val in enumerate(rawX):
             try:
-                if i == 14 or i == 16:
+                if i == 8:
                     raise Exception
                 val = int(val)
                 x.append(val)
             except:
                 x.append(val)
 
-        move = self.weka.predict("./Weka_data/modelLMT_keyboard_1.model", x, "./Weka_data/training_keyboard_1.arff")
+        move = self.weka.predict("./Weka_data/aprox_2/t1_LMT_2_1.model", x, "./Weka_data/aprox_2/t1_training_2_1.arff")
         while move not in legal:
             move_random = random.randint(0, 3)
             if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
