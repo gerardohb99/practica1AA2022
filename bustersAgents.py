@@ -218,7 +218,12 @@ class BustersAgent(object):
                 data += str(ghostPos[0] - pacmanPos[0]) + ","
                 data += str(ghostPos[1] - pacmanPos[1]) + ","
             else:
-                data += "99999,99999,"
+                found = False
+                for i, ghostPos in enumerate(gameState.getGhostPositions()):
+                    if gameState.getLivingGhosts()[i+1] is True and found is False:
+                        data += str(ghostPos[0] - pacmanPos[0]) + ","
+                        data += str(ghostPos[1] - pacmanPos[1]) + ","
+                        found = True
 
 
         # Alive ghosts (index 0 corresponds to Pacman and is always false)
