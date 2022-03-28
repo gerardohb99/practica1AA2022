@@ -446,52 +446,30 @@ class BasicAgentAA(BustersAgent):
         return direction
 
 
-
-
-
-
     def chooseAction(self, gameState):
         self.countActions = self.countActions + 1
         self.printInfo(gameState)
         move = Directions.STOP
         legal = gameState.getLegalActions(0)  ##Legal position from the pacman
-        # minDistance = 10 ** 10
-        # livingGhosts = gameState.getLivingGhosts()
-        # lastAction = gameState.data.agentStates[0].getDirection()
-        # vec = (1, 1)
+        minDistance = 10 ** 10
+        livingGhosts = gameState.getLivingGhosts()
+        lastAction = gameState.data.agentStates[0].getDirection()
+        vec = (1, 1)
 
-        # for i in range(1, len(livingGhosts)):
-        #     if livingGhosts[i]:
+        for i in range(1, len(livingGhosts)):
+            if livingGhosts[i]:
 
-        #         distance = (gameState.data.ghostDistances[i - 1], 10 ** 10)[
-        #             gameState.data.ghostDistances[i - 1] is None]
-        #         if distance < minDistance:
-        #             minDistance = distance
-        #             vecx = gameState.getGhostPositions()[i - 1][0] - gameState.getPacmanPosition()[0]
-        #             vecy = gameState.getGhostPositions()[i - 1][1] - gameState.getPacmanPosition()[1]
-        #             vec = (vecx, vecy)
+                distance = (gameState.data.ghostDistances[i - 1], 10 ** 10)[
+                    gameState.data.ghostDistances[i - 1] is None]
+                if distance < minDistance:
+                    minDistance = distance
+                    vecx = gameState.getGhostPositions()[i - 1][0] - gameState.getPacmanPosition()[0]
+                    vecy = gameState.getGhostPositions()[i - 1][1] - gameState.getPacmanPosition()[1]
+                    vec = (vecx, vecy)
 
 
-        # move = self.vectorToAction(vec, legal, lastAction)
-        rawX = self.printLineDataV2(gameState).split(",")
-        rawX.pop()
-        x = []
-        for i,val in enumerate(rawX):
-            try:
-                if i == 14 or i == 16:
-                    raise Exception
-                val = int(val)
-                x.append(val)
-            except:
-                x.append(val)
-
-        move = self.weka.predict("./Weka_data/modelLMT_keyboard_1.model", x, "./Weka_data/training_keyboard_1.arff")
-        while move not in legal:
-            move_random = random.randint(0, 3)
-            if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
-            if (move_random == 1) and Directions.EAST in legal: move = Directions.EAST
-            if (move_random == 2) and Directions.NORTH in legal:   move = Directions.NORTH
-            if (move_random == 3) and Directions.SOUTH in legal: move = Directions.SOUTH
+        move = self.vectorToAction(vec, legal, lastAction)
+      
         return move
 
     def printLineData(self, gameState):
@@ -542,3 +520,60 @@ class BasicAgentAA(BustersAgent):
 
     # Para ver los puntos conflictivos seria bueno crearse un array en el que vamos evaluando puntos conflictivos para leugo consultar dicha lista antes
     # realizar cualquier tipo de movimiento 
+
+    class AgentAA(BustersAgent):
+    
+        def registerInitialState(self, gameState):
+            BustersAgent.registerInitialState(self, gameState)
+            self.distancer = Distancer(gameState.data.layout, False)
+            self.countActions = 0
+
+
+        def countFood(self, gameState):
+            food = 0
+            for width in gameState.data.food:
+                for height in width:
+                    if (height == True):
+                        food = food + 1
+            return food
+
+        ''' Print the layout'''
+
+        def printGrid(self, gameState):
+            table = ""
+            # print(gameState.data.layout) ## Print by terminal
+            for x in range(gameState.data.layout.width):
+                for y in range(gameState.data.layout.height):
+                    food, walls = gameState.data.food, gameState.data.layout.walls
+                    table = table + gameState.data._foodWallStr(food[x][y], walls[x][y]) + ","
+            table = table[:-1]
+            return table
+
+        def chooseAction(self, gameState):
+            self.countActions = self.countActions + 1
+            self.printInfo(gameState)
+            move = Directions.STOP
+            legal = gameState.getLegalActions(0)  ##Legal position from the pacman
+
+            rawX = self.printLineDataV2(gameState).split(",")
+            rawX.pop()
+            x = []
+            for i,val in enumerate(rawX):
+                try:
+                    if i == 14 or i == 16:
+                        raise Exception
+                    val = int(val)
+                    x.append(val)
+                except:
+                    x.append(val)
+
+            move = self.weka.predict("./Weka_data/modelLMT_keyboard_1.model", x, "./Weka_data/training_keyboard_1.arff")
+            while move not in legal:
+                move_random = random.randint(0, 3)
+                if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
+                if (move_random == 1) and Directions.EAST in legal: move = Directions.EAST
+                if (move_random == 2) and Directions.NORTH in legal:   move = Directions.NORTH
+                if (move_random == 3) and Directions.SOUTH in legal: move = Directions.SOUTH
+            return move
+
+    
