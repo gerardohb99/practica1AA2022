@@ -243,30 +243,30 @@ class BustersAgent(object):
         data += str(alive_ghost) + ","
 
         # Score
-        data += str(gameState.getScore()) + ","
+        #data += str(gameState.getScore()) + ","
 
         # MiniMap
         data += self.printMiniMap(gameState.getWalls(), gameState.getPacmanPosition(), gameState.getGhostPositions()) + ","
 
         #Is ghost in directions
         # North
-        data += str(self.is_ghost(gameState, Directions.NORTH)) + ","
+        #data += str(self.is_ghost(gameState, Directions.NORTH)) + ","
         # South
-        data += str(self.is_ghost(gameState, Directions.SOUTH)) + ","
+        #data += str(self.is_ghost(gameState, Directions.SOUTH)) + ","
         # East
-        data += str(self.is_ghost(gameState, Directions.EAST)) + ","
+        #data += str(self.is_ghost(gameState, Directions.EAST)) + ","
         # West
-        data += str(self.is_ghost(gameState, Directions.WEST)) + ","
+        #data += str(self.is_ghost(gameState, Directions.WEST)) + ","
 
         #Is food in directions
         # North
-        data += str(self.is_food(gameState, Directions.NORTH)) + ","
+        #data += str(self.is_food(gameState, Directions.NORTH)) + ","
         # South
-        data += str(self.is_food(gameState, Directions.SOUTH)) + ","
+        #data += str(self.is_food(gameState, Directions.SOUTH)) + ","
         # East
-        data += str(self.is_food(gameState, Directions.EAST)) + ","
+        #data += str(self.is_food(gameState, Directions.EAST)) + ","
         # West
-        data += str(self.is_food(gameState, Directions.WEST)) + ","
+        #data += str(self.is_food(gameState, Directions.WEST)) + ","
 
 
         return data
