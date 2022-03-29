@@ -25,7 +25,7 @@ from distanceCalculator import Distancer
 from game import Actions
 from game import Directions
 import random, sys
-from wekaI import Weka
+# from wekaI import Weka
 
 
 class NullGraphics(object):
@@ -89,8 +89,8 @@ class BustersAgent(object):
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
         self.elapseTimeEnable = elapseTimeEnable
-        self.weka = Weka()
-        self.weka.start_jvm()
+        # self.weka = Weka()
+        # self.weka.start_jvm()
 
     def registerInitialState(self, gameState):
         "Initializes beliefs and inference modules"
@@ -146,28 +146,18 @@ class BustersAgent(object):
     def printHeader(self):
         data = ""
         data += "@relation " + self.__class__.__name__ + "training-data\n\n"
-        data += "@attribute ghostVector1x NUMERIC\n"
-        data += "@attribute ghostVector1y NUMERIC\n"
-        data += "@attribute ghostVector2x NUMERIC\n"
-        data += "@attribute ghostVector2y NUMERIC\n"
-        data += "@attribute ghostVector3x NUMERIC\n"
-        data += "@attribute ghostVector3y NUMERIC\n"
-        data += "@attribute ghostVector4x NUMERIC\n"
-        data += "@attribute ghostVector4y NUMERIC\n"
+        data += "@attribute ghostDirection1 {None,South,North,West,East}\n"
+        data += "@attribute ghostDirection2 {None,South,North,West,East}\n"
+        data += "@attribute ghostDirection3 {None,South,North,West,East}\n"
+        data += "@attribute ghostDirection4 {None,South,North,West,East}\n"
         data += "@attribute aliveGhost{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
-        data += "@attribute score NUMERIC\n"
+        data += "@attribute distanceGhost1 NUMERIC\n"
+        data += "@attribute distanceGhost2 NUMERIC\n"
+        data += "@attribute distanceGhost3 NUMERIC\n"
+        data += "@attribute distanceGhost4 NUMERIC\n"
         # Minimap para size=2
         for i in range(1,26):
             data += "@attribute minimap"+ str(i) +" {W,E,G}\n"
-
-        data += "@attribute isGhostNorth {True, False}\n"
-        data += "@attribute isGhostSouth {True, False}\n"
-        data += "@attribute isGhostEast  {True, False}\n"
-        data += "@attribute isGhostWest  {True, False}\n"
-        data += "@attribute isFoodNorth  {True, False}\n"
-        data += "@attribute isFoodSouth  {True, False}\n"
-        data += "@attribute isFoodEast   {True, False}\n"
-        data += "@attribute isFoodWest   {True, False}\n"
 
         data += "@attribute action{Stop,South,North,West,East}\n"
         data += "@attribute nextScore NUMERIC\n\n"
@@ -206,23 +196,42 @@ class BustersAgent(object):
 
         return False
 
+    def vectorToDirection(self, vector):
+        dx, dy = vector
+        max_d = max(dx, dy)
+
+        # Dar prioridad al diferencial mas grande
+        if max_d == dy:
+            if dy > 0 and Directions.NORTH:
+                return Directions.NORTH
+            if dy < 0 and Directions.SOUTH:
+                return Directions.SOUTH
+            if dx < 0 and Directions.WEST:
+                return Directions.WEST
+            if dx > 0 and Directions.EAST:
+                return Directions.EAST
+        else:
+            if dx < 0 and Directions.WEST:
+                return Directions.WEST
+            if dx > 0 and Directions.EAST:
+                return Directions.EAST
+            if dy > 0 and Directions.NORTH:
+                return Directions.NORTH
+            if dy < 0 and Directions.SOUTH:
+                return Directions.SOUTH
+
     def printLineDataV2(self, gameState, data=""):
-        direction = 0
         alive_ghost = 0
         pacmanPos = gameState.getPacmanPosition()
 
         # Ghosts vector center in pacman 
         for i, ghostPos in enumerate(gameState.getGhostPositions()):
             if gameState.getLivingGhosts()[i+1] is True:
-                data += str(ghostPos[0] - pacmanPos[0]) + ","
-                data += str(ghostPos[1] - pacmanPos[1]) + ","
+                vec = (ghostPos[0] - pacmanPos[0], ghostPos[1] - pacmanPos[1])
+                data += self.vectorToDirection(vec) + ","
             else:
-                found = False
-                for i, ghostPos in enumerate(gameState.getGhostPositions()):
-                    if gameState.getLivingGhosts()[i+1] is True and found is False:
-                        data += str(ghostPos[0] - pacmanPos[0]) + ","
-                        data += str(ghostPos[1] - pacmanPos[1]) + ","
-                        found = True
+                data += "None,"
+
 
 
         # Alive ghosts (index 0 corresponds to Pacman and is always false)
@@ -241,32 +250,15 @@ class BustersAgent(object):
 
         data += str(alive_ghost) + ","
 
-        # Score
-        data += str(gameState.getScore()) + ","
+        # Ghosts distances 
+        for i in gameState.data.ghostDistances:
+            if i == None:
+                data += str(10 ** 3) + ","
+            else:
+                data += str(i) + ","
 
         # MiniMap
         data += self.printMiniMap(gameState.getWalls(), gameState.getPacmanPosition(), gameState.getGhostPositions()) + ","
-
-        #Is ghost in directions
-        # North
-        data += str(self.is_ghost(gameState, Directions.NORTH)) + ","
-        # South
-        data += str(self.is_ghost(gameState, Directions.SOUTH)) + ","
-        # East
-        data += str(self.is_ghost(gameState, Directions.EAST)) + ","
-        # West
-        data += str(self.is_ghost(gameState, Directions.WEST)) + ","
-
-        #Is food in directions
-        # North
-        data += str(self.is_food(gameState, Directions.NORTH)) + ","
-        # South
-        data += str(self.is_food(gameState, Directions.SOUTH)) + ","
-        # East
-        data += str(self.is_food(gameState, Directions.EAST)) + ","
-        # West
-        data += str(self.is_food(gameState, Directions.WEST)) + ","
-
 
         return data
 
@@ -591,14 +583,14 @@ class AgentAA(BustersAgent):
         x = []
         for i,val in enumerate(rawX):
             try:
-                if i == 8:
+                if i == 4:
                     raise Exception
                 val = int(val)
                 x.append(val)
             except:
                 x.append(val)
 
-        move = self.weka.predict("./Weka_data/aprox_2/t1_LMT_2_1.model", x, "./Weka_data/aprox_2/t1_training_2_1.arff")
+        move = self.weka.predict("./Weka_data/aprox_3/t1_LMT_3_1.model", x, "./Weka_data/aprox_3/t1_training_3_1.arff")
         while move not in legal:
             move_random = random.randint(0, 3)
             if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
