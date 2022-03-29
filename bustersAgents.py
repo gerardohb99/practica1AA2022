@@ -599,7 +599,7 @@ class AgentAA(BustersAgent):
             except:
                 x.append(val)
 
-        move = self.weka.predict("./Weka_data/aprox_2/t1_LMT_2_1.model", x, "./Weka_data/aprox_2/t1_training_2_1.arff")
+        move = self.weka.predict("./Weka_data/aprox_2/t1_LMT_2_2.model", x, "./Weka_data/aprox_2/t1_training_2_2.arff")
         while move not in legal:
             move_random = random.randint(0, 3)
             if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
