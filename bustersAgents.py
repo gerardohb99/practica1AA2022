@@ -26,7 +26,7 @@ from distanceCalculator import Distancer
 from game import Actions
 from game import Directions
 import random, sys
-from wekaI import Weka
+# from wekaI import Weka
 
 
 class NullGraphics(object):
@@ -90,8 +90,8 @@ class BustersAgent(object):
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
         self.elapseTimeEnable = elapseTimeEnable
-        self.weka = Weka()
-        self.weka.start_jvm()
+        # self.weka = Weka()
+        # self.weka.start_jvm()
 
     def registerInitialState(self, gameState):
         "Initializes beliefs and inference modules"
@@ -164,12 +164,10 @@ class BustersAgent(object):
         data += "@attribute validActions{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
         data += "@attribute lastAction{Stop,South,North,West,East}\n"
         data += "@attribute aliveGhost{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
-        data += "@attribute score NUMERIC\n"
         # Minimap para size=2
         for i in range(1,26):
             data += "@attribute minimap"+ str(i) +" {W,E,G}\n"
-
-        data += "@attribute nearestDot NUMERIC\n"
+            
         data += "@attribute action{Stop,South,North,West,East}\n"
         data += "@attribute nextScore NUMERIC\n\n"
         data += "@data\n"
