@@ -26,7 +26,7 @@ from distanceCalculator import Distancer
 from game import Actions
 from game import Directions
 import random, sys
-# from wekaI import Weka
+from wekaI import Weka
 
 
 class NullGraphics(object):
@@ -90,8 +90,8 @@ class BustersAgent(object):
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
         self.elapseTimeEnable = elapseTimeEnable
-        # self.weka = Weka()
-        # self.weka.start_jvm()
+        self.weka = Weka()
+        self.weka.start_jvm()
 
     def registerInitialState(self, gameState):
         "Initializes beliefs and inference modules"
