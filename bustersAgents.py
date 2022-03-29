@@ -12,7 +12,6 @@ from __future__ import print_function
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
 from builtins import range
 from builtins import object
 import util
