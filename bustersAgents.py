@@ -26,7 +26,7 @@ from distanceCalculator import Distancer
 from game import Actions
 from game import Directions
 import random, sys
-from wekaI import Weka
+# from wekaI import Weka
 
 
 class NullGraphics(object):
@@ -90,8 +90,8 @@ class BustersAgent(object):
         self.inferenceModules = [inferenceType(a) for a in ghostAgents]
         self.observeEnable = observeEnable
         self.elapseTimeEnable = elapseTimeEnable
-        self.weka = Weka()
-        self.weka.start_jvm()
+        # self.weka = Weka()
+        # self.weka.start_jvm()
 
     def registerInitialState(self, gameState):
         "Initializes beliefs and inference modules"
@@ -147,15 +147,6 @@ class BustersAgent(object):
     def printHeader(self):
         data = ""
         data += "@relation " + self.__class__.__name__ + "training-data\n\n"
-        data += "@attribute ghostVector1x NUMERIC\n"
-        data += "@attribute ghostVector1y NUMERIC\n"
-        data += "@attribute ghostVector2x NUMERIC\n"
-        data += "@attribute ghostVector2y NUMERIC\n"
-        data += "@attribute ghostVector3x NUMERIC\n"
-        data += "@attribute ghostVector3y NUMERIC\n"
-        data += "@attribute ghostVector4x NUMERIC\n"
-        data += "@attribute ghostVector4y NUMERIC\n"
-        data += "@attribute aliveGhost{1111,1110,1100,1101,1011,1001,1010,1000,111,110,101,100,11,10,1,0}\n"
         data += "@attribute score NUMERIC\n"
         # Minimap para size=2
         for i in range(1,26):
@@ -212,61 +203,61 @@ class BustersAgent(object):
         alive_ghost = 0
         pacmanPos = gameState.getPacmanPosition()
 
-        # Ghosts vector center in pacman 
-        for i, ghostPos in enumerate(gameState.getGhostPositions()):
-            if gameState.getLivingGhosts()[i+1] is True:
-                data += str(ghostPos[0] - pacmanPos[0]) + ","
-                data += str(ghostPos[1] - pacmanPos[1]) + ","
-            else:
-                found = False
-                for i, ghostPos in enumerate(gameState.getGhostPositions()):
-                    if gameState.getLivingGhosts()[i+1] is True and found is False:
-                        data += str(ghostPos[0] - pacmanPos[0]) + ","
-                        data += str(ghostPos[1] - pacmanPos[1]) + ","
-                        found = True
+        # # Ghosts vector center in pacman 
+        # for i, ghostPos in enumerate(gameState.getGhostPositions()):
+        #     if gameState.getLivingGhosts()[i+1] is True:
+        #         data += str(ghostPos[0] - pacmanPos[0]) + ","
+        #         data += str(ghostPos[1] - pacmanPos[1]) + ","
+        #     else:
+        #         found = False
+        #         for i, ghostPos in enumerate(gameState.getGhostPositions()):
+        #             if gameState.getLivingGhosts()[i+1] is True and found is False:
+        #                 data += str(ghostPos[0] - pacmanPos[0]) + ","
+        #                 data += str(ghostPos[1] - pacmanPos[1]) + ","
+        #                 found = True
 
 
-        # Alive ghosts (index 0 corresponds to Pacman and is always false)
-        for i in range(1, len(gameState.getLivingGhosts())):
-            if i == 1 and gameState.getLivingGhosts()[i] is False:
-                alive_ghost += 1000
+        # # Alive ghosts (index 0 corresponds to Pacman and is always false)
+        # for i in range(1, len(gameState.getLivingGhosts())):
+        #     if i == 1 and gameState.getLivingGhosts()[i] is False:
+        #         alive_ghost += 1000
 
-            elif i == 2 and gameState.getLivingGhosts()[i] is False:
-                alive_ghost += 100
+        #     elif i == 2 and gameState.getLivingGhosts()[i] is False:
+        #         alive_ghost += 100
 
-            elif i == 3 and gameState.getLivingGhosts()[i] is False:
-                alive_ghost += 10
+        #     elif i == 3 and gameState.getLivingGhosts()[i] is False:
+        #         alive_ghost += 10
 
-            elif i == 4 and gameState.getLivingGhosts()[i] is False:
-                alive_ghost += 1
+        #     elif i == 4 and gameState.getLivingGhosts()[i] is False:
+        #         alive_ghost += 1
 
-        data += str(alive_ghost) + ","
+        # data += str(alive_ghost) + ","
 
         # Score
-        #data += str(gameState.getScore()) + ","
+        data += str(gameState.getScore()) + ","
 
         # MiniMap
         data += self.printMiniMap(gameState.getWalls(), gameState.getPacmanPosition(), gameState.getGhostPositions()) + ","
 
         #Is ghost in directions
         # North
-        #data += str(self.is_ghost(gameState, Directions.NORTH)) + ","
+        data += str(self.is_ghost(gameState, Directions.NORTH)) + ","
         # South
-        #data += str(self.is_ghost(gameState, Directions.SOUTH)) + ","
+        data += str(self.is_ghost(gameState, Directions.SOUTH)) + ","
         # East
-        #data += str(self.is_ghost(gameState, Directions.EAST)) + ","
+        data += str(self.is_ghost(gameState, Directions.EAST)) + ","
         # West
-        #data += str(self.is_ghost(gameState, Directions.WEST)) + ","
+        data += str(self.is_ghost(gameState, Directions.WEST)) + ","
 
         #Is food in directions
         # North
-        #data += str(self.is_food(gameState, Directions.NORTH)) + ","
+        data += str(self.is_food(gameState, Directions.NORTH)) + ","
         # South
-        #data += str(self.is_food(gameState, Directions.SOUTH)) + ","
+        data += str(self.is_food(gameState, Directions.SOUTH)) + ","
         # East
-        #data += str(self.is_food(gameState, Directions.EAST)) + ","
+        data += str(self.is_food(gameState, Directions.EAST)) + ","
         # West
-        #data += str(self.is_food(gameState, Directions.WEST)) + ","
+        data += str(self.is_food(gameState, Directions.WEST)) + ","
 
 
         return data
