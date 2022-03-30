@@ -483,7 +483,7 @@ class BasicAgentAA(BustersAgent):
             except:
                 x.append(val)
 
-        move = self.weka.predict("./Weka_data/modelLMT_t1_1.model", x, "./Weka_data/t1_training_1.arff")
+        move = self.weka.predict("./Weka_data/keyboard_ghb/modelLMT_keyboard_1.model", x, "./Weka_data/keyboard_ghb/keyboard_training_1.arff")
         while move not in legal:
             move_random = random.randint(0, 3)
             if (move_random == 0) and Directions.WEST in legal:  move = Directions.WEST
