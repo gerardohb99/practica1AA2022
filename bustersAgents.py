@@ -550,7 +550,6 @@ class AgentAA(BustersAgent):
 
     def chooseAction(self, gameState):
         self.countActions = self.countActions + 1
-        self.printInfo(gameState)
         move = Directions.STOP
         legal = gameState.getLegalActions(0)  ##Legal position from the pacman
 
